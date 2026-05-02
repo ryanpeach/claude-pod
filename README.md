@@ -58,7 +58,7 @@ You land in a bash shell at the same path your project lives at on the host (e.g
 claude --dangerously-skip-permissions
 ```
 
-Or run the container and claude code inside of it in one command:
+Alternatively, you may skip the shell and go straight into Claude. Anything you pass to `claude-pod` is run inside the container instead of bash. So this drops you directly into Claude in one command, and exits the container when Claude exits:
 
 ```sh
 ~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions
@@ -77,14 +77,6 @@ alias cc='~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions'  
 ```
 
 The shell-first form is more flexible (run `npm install`, dev server, tests, then `claude`), so it stays the default.
-
-#### Skip the shell, go straight into Claude
-
-Anything you pass to `claude-pod` is run inside the container instead of bash. So this drops you directly into Claude in one command, and exits the container when Claude exits:
-
-```sh
-~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions
-```
 
 #### Piping data (standard input)
 
