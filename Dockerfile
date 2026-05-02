@@ -7,11 +7,16 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends git ca-certificates curl less jq gh \
  && rm -rf /var/lib/apt/lists/*
 
-# CACHEBUST is passed from install.sh as the current timestamp.
-# This invalidates the cache from this line onward, forcing Docker to always
-# fetch the latest version of claude-code without rebuilding the slow apt-get layer.
+# Override at build time with --build-arg CLAUDE_CODE_VERSION=2.x.y to pin a specific
+# version. Default "latest" tracks whatever's current on npm.
+ARG CLAUDE_CODE_VERSION=latest
+
+# When CLAUDE_CODE_VERSION=latest, install.sh passes CACHEBUST=$(date +%s) to force a fresh
+# refetch (the literal "latest" alone wouldn't change the layer's cache key). For pinned
+# versions, the version literal itself is the cache key, so install.sh skips CACHEBUST and
+# this layer caches normally.
 ARG CACHEBUST=1
-RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
 # We DO NOT use `USER node` here. Instead, we pass `--user "$(id -u):$(id -g)"` dynamically
 # at runtime in the `claude-pod` script. This ensures perfect file permission alignment
