@@ -66,14 +66,10 @@ Or run the container and claude code inside of it in one command:
 
 By default, no container ports are published to the host, so any dev server you start is unreachable from your browser until you opt in. Outbound traffic from the container is **not** restricted — see [What is and isn't isolated](#what-is-and-isnt-isolated) below. To expose a dev server, pass the `PORTS` variable (e.g., `PORTS=3000 claude-pod`). To exit, type `exit`.
 
-> The wrapper is a transparent passthrough — there is no `claude-pod --help` or `claude-pod --version` of its own. Those flags would just be forwarded to `bash` inside the container. For Claude's own flags use `claude-pod claude --help` / `claude-pod claude --version`.
-
-> If your project has a host-built `node_modules`, delete it and reinstall inside the container — native binaries don't cross from host OS to container Linux.
-
 <details>
 <summary><strong>More usage patterns</strong> (aliases, drop straight into Claude, piping)</summary>
 
-### Aliases
+#### Aliases
 
 ```sh
 alias claude-pod=~/tools/claude-pod/claude-pod                                  # shell first
@@ -82,7 +78,7 @@ alias cc='~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions'  
 
 The shell-first form is more flexible (run `npm install`, dev server, tests, then `claude`), so it stays the default.
 
-### Skip the shell, go straight into Claude
+#### Skip the shell, go straight into Claude
 
 Anything you pass to `claude-pod` is run inside the container instead of bash. So this drops you directly into Claude in one command, and exits the container when Claude exits:
 
@@ -90,7 +86,7 @@ Anything you pass to `claude-pod` is run inside the container instead of bash. S
 ~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions
 ```
 
-### Piping data (standard input)
+#### Piping data (standard input)
 
 Because `claude-pod` correctly handles TTY detection, you can seamlessly pipe files or command outputs directly into Claude just like a native CLI tool:
 
@@ -103,6 +99,11 @@ cat crash.log | cc -p "Why did the server crash?"
 ```
 
 </details>
+
+> The wrapper is a transparent passthrough — there is no `claude-pod --help` or `claude-pod --version` of its own. Those flags would just be forwarded to `bash` inside the container. For Claude's own flags use `claude-pod claude --help` / `claude-pod claude --version`.
+
+> If your project has a host-built `node_modules`, delete it and reinstall inside the container — native binaries don't cross from host OS to container Linux.
+
 
 ## Updating or pinning the Claude Code version
 
