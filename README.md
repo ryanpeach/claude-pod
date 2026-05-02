@@ -92,10 +92,20 @@ cat crash.log | cc -p "Why did the server crash?"
 
 </details>
 
-> The wrapper is a transparent passthrough — there is no `claude-pod --help` or `claude-pod --version` of its own. Those flags would just be forwarded to `bash` inside the container. For Claude's own flags use `claude-pod claude --help` / `claude-pod claude --version`.
+## Exposing ports
 
-> If your project has a host-built `node_modules`, delete it and reinstall inside the container — native binaries don't cross from host OS to container Linux.
+By default, `claude-pod` doesn't publish any ports to the host (outbound traffic is still unrestricted — see [What is and isn't isolated](#what-is-and-isnt-isolated)). Map ports through with the `PORTS` environment variable:
 
+```sh
+# Map a single port (127.0.0.1:3000 -> container:3000)
+PORTS=3000 claude-pod
+
+# Map multiple ports
+PORTS="3000 5173" claude-pod
+
+# Map a specific host port to a different container port
+PORTS="8080:80" claude-pod
+```
 
 ## Updating or pinning the Claude Code version
 
@@ -144,20 +154,11 @@ The tradeoff: the worst case becomes "something bad happens to one project folde
 
 The image is intentionally minimal: `node:24-slim` + `git` + `curl` + `less` + `jq` + `gh` + Claude Code. Nothing language-specific. Anything your projects need (Python, build tools, other toolchains) you add yourself — edit the `Dockerfile` and re-run `./install.sh`.
 
-### Exposing ports
+### Notes
 
-By default, `claude-pod` doesn't publish any ports to the host (outbound traffic is still unrestricted — see [What is and isn't isolated](#what-is-and-isnt-isolated)). Map ports through with the `PORTS` environment variable:
+> The wrapper is a transparent passthrough — there is no `claude-pod --help` or `claude-pod --version` of its own. Those flags would just be forwarded to `bash` inside the container. For Claude's own flags use `claude-pod claude --help` / `claude-pod claude --version`.
 
-```sh
-# Map a single port (127.0.0.1:3000 -> container:3000)
-PORTS=3000 claude-pod
-
-# Map multiple ports
-PORTS="3000 5173" claude-pod
-
-# Map a specific host port to a different container port
-PORTS="8080:80" claude-pod
-```
+> If your project has a host-built `node_modules`, delete it and reinstall inside the container — native binaries don't cross from host OS to container Linux.
 
 ### Python
 
