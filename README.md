@@ -105,9 +105,9 @@ cat crash.log | cc -p "Why did the server crash?"
 - The host shell. No way to execute commands on your host machine.
 
 **Still exposed:**
-- The project folder itself, including any `.env` files in it.
-- The network. Code in the container can reach the internet, so a malicious payload could exfiltrate the project contents or burn your Anthropic API quota.
-- Your Anthropic login (stored in `~/.claude-pod/` on the host, separate from any host Claude install, shared across sandboxed projects).
+- **The project folder itself.** Anything inside it — `.env`, `.git/config` (which can carry credentials for private remotes), private keys committed by mistake, `node_modules`, sibling worktrees, scratch files — is fully readable *and* writable by code running in the container. Don't run `claude-pod` from a folder whose contents you wouldn't trust the AI (or a malicious dependency it just installed) to see and modify.
+- **The network.** Outbound is unrestricted. A malicious payload could exfiltrate the project contents or burn your Anthropic API quota.
+- **Your Anthropic login** (stored in `~/.claude-pod/` on the host, separate from any host Claude install, shared across sandboxed projects).
 
 **Where Claude can actually write** — two paths, both intentional bind mounts:
 - The project folder, bind-mounted at the same path inside the container (`$PWD:$PWD`). Edits land on your host's disk directly, no copy.
