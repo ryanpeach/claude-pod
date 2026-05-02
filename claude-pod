@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Host-side state dir: persists Claude's auth + history across container restarts.
+mkdir -p "$HOME/.claude-pod"
+
+# Claude reads its main config from $HOME/.claude.json (a file at HOME, sibling to the .claude/
+# directory). We bind-mount this file separately so login state survives. Two quirks:
+#   - Docker creates a directory at the target if the source path is missing, so the file must
+#     pre-exist on the host before `docker run`.
+#   - Claude treats an empty file as a JSON parse error, not as "no config", so we seed it with {}.
+[ -s "$HOME/.claude-pod/.claude.json" ] || printf '{}' > "$HOME/.claude-pod/.claude.json"
+
+# Mounts:
+#   $PWD -> $PWD                               project files; same path on both sides keeps file
+#                                              references (logs, errors, tool output) consistent
+#                                              between host and container.
+#   ~/.claude-pod -> /home/node/.claude        credentials, sessions, history (the .claude dir).
+#   ~/.claude-pod/.claude.json -> ditto        account binding + project trust state (sibling file).
+# Port 3000 is bound to 127.0.0.1 only — a dev server inside the container is reachable from this
+# Mac but not from anyone else on the network.
+exec docker run --rm -it \
+  -v "$PWD:$PWD" \
+  -w "$PWD" \
+  -v "$HOME/.claude-pod:/home/node/.claude" \
+  -v "$HOME/.claude-pod/.claude.json:/home/node/.claude.json" \
+  -p 127.0.0.1:3000:3000 \
+  claude-pod "$@"

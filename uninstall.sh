@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ANSI color codes; auto-disabled when stdout isn't a TTY (e.g. piped to a logfile, run in CI).
+BOLD=$'\e[1m'; BLUE=$'\e[34m'; GREEN=$'\e[32m'; RED=$'\e[31m'; DIM=$'\e[2m'; RESET=$'\e[0m'
+[[ -t 1 ]] || { BOLD=; BLUE=; GREEN=; RED=; DIM=; RESET=; }
+info() { printf '%s●%s %s%s%s\n' "$BLUE" "$RESET" "$BOLD" "$*" "$RESET"; }
+ok()   { printf '%s✓%s %s\n'       "$GREEN" "$RESET" "$*"; }
+err()  { printf '%s✗%s %s\n'       "$RED"   "$RESET" "$*" >&2; }
+# `trap - ERR` disarms the ERR trap below so the explicit `exit 1` doesn't double-report.
+die()  { err "$*"; trap - ERR; exit 1; }
+trap 'err "uninstall.sh failed at line $LINENO"' ERR
+
+CLAUDE_DIR="$HOME/.claude-pod"
+IMAGE="claude-pod"
+
+info "Will remove"
+printf '  %simage:%s %s\n' "$DIM" "$RESET" "$IMAGE"
+printf '  %sdir:  %s %s %s(auth + session history)%s\n' "$DIM" "$RESET" "$CLAUDE_DIR" "$DIM" "$RESET"
+echo
+
+info "Will NOT remove"
+printf '  %snode:lts-slim base image (docker rmi node:lts-slim to clear)%s\n' "$DIM" "$RESET"
+printf '  %sDocker build cache (docker builder prune to clear)%s\n' "$DIM" "$RESET"
+printf '  %sthis repo folder (delete it yourself)%s\n' "$DIM" "$RESET"
+echo
+
+read -r -p "Proceed? [y/N] " reply
+[[ "$reply" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
+echo
+
+info "Removing image '$IMAGE'"
+if docker image inspect "$IMAGE" >/dev/null 2>&1; then
+  # Dim + indent the rmi output the same way install.sh dims `docker build` output.
+  docker rmi "$IMAGE" 2>&1 \
+    | sed $'s/\e\\[[0-9;]*m//g' \
+    | while IFS= read -r line; do printf '%s  %s%s\n' "$DIM" "$line" "$RESET"; done
+  ok "Image '$IMAGE' removed"
+else
+  ok "Image '$IMAGE' was not present"
+fi
+echo
+
+info "Removing host directory"
+if [ -d "$CLAUDE_DIR" ]; then
+  rm -rf "$CLAUDE_DIR"
+  ok "Removed $CLAUDE_DIR"
+else
+  ok "$CLAUDE_DIR was not present"
+fi
+echo
+
+ok "Done"
