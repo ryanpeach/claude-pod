@@ -20,6 +20,10 @@ cd ~/tools/claude-pod && ./install.sh
 
 Docker is the only requirement. The install path (`~/tools/claude-pod`) is just a convention — put it wherever you want.
 
+**The outcome:** You can run Claude Code in auto-approval mode without exposing your whole machine. `claude-pod` launches Claude inside a Docker container with only your current project folder mounted, so Claude can read and edit that project, but not your home directory, SSH keys, other projects, or host shell. This turns the main risk from “Claude can touch my machine” into “Claude can touch this project folder.” Read more about [what is and isn't isolated](#what-is-and-isnt-isolated).
+
+Prefer the official approach? See Anthropic's [Claude Code sandboxing documentation](https://code.claude.com/docs/en/sandboxing).
+
 ## Requirements
 
 **Just Docker.** 
