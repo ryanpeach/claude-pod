@@ -7,8 +7,11 @@ BOLD=$'\e[1m'; RED=$'\e[31m'; RESET=$'\e[0m'
 err() { printf '%s✗%s %s\n' "$RED" "$RESET" "$*" >&2; }
 die() { err "$*"; exit 1; }
 
-# Sanity check: Ensure the image has been built before trying to run it.
-# Without this, Docker will try to pull 'claude-pod' from Docker Hub and fail cryptically.
+# Preflight checks, in causal order. Without these the failures surface as cryptic Docker errors:
+#   - daemon down -> the image-inspect below would falsely blame a missing image.
+#   - missing image -> Docker would try to pull 'claude-pod' from Docker Hub and fail.
+command -v docker >/dev/null || die "Docker is required but not on PATH."
+docker info >/dev/null 2>&1 || die "Docker daemon is not running."
 if ! docker image inspect claude-pod >/dev/null 2>&1; then
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   err "Image 'claude-pod' not found."
