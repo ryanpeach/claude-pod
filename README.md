@@ -41,10 +41,6 @@ The whole tool is four tiny files:
 - **`install.sh`** — checks Docker and builds the image. Doesn't touch any system path; the tool stays self-contained in this folder.
 - **`uninstall.sh`** — removes the image and `~/.claude-pod/` (auth + session history) after confirmation. Lists what it doesn't touch so you can clean those up yourself.
 
-## First launch (login)
-
-The first time you start Claude inside the pod, it will print a login URL. Open it in your host browser, complete the login, paste the verification code back into the container, and you're done. The session persists in `~/.claude-pod/` and survives container restarts — you only do this once per machine.
-
 ## Usage
 
 Call the script using its full or relative path from any project:
@@ -68,7 +64,7 @@ Alternatively, you may skip the shell and go straight into Claude. Anything you 
 
 To exit, type `exit`.
 
-**Aliases**
+### Aliases
 
 For your convenience, you can add the following aliases to your shell configuration file (`~/.zshrc`, `~/.bashrc`, etc.):
 
@@ -79,7 +75,11 @@ alias cc='~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions'
 
 The shell-first form is more flexible, since you can run `npm install`, dev server, tests, then `claude` directly inside the container, so it is the default.
 
-## Exposing ports
+### First launch (login)
+
+The first time you start Claude inside the pod, it will print a login URL. Open it in your host browser, complete the login, paste the verification code back into the container, and you're done. The session persists in `~/.claude-pod/` and survives container restarts — you only do this once per machine.
+
+### Exposing ports
 
 By default, `claude-pod` doesn't publish any ports to the host (outbound traffic is still unrestricted — see [What is and isn't isolated](#what-is-and-isnt-isolated)). Map ports through with the `PORTS` environment variable:
 
@@ -94,7 +94,7 @@ PORTS="3000 5173" claude-pod
 PORTS="8080:80" claude-pod
 ```
 
-## Updating or pinning the Claude Code version
+### Updating or pinning the Claude Code version
 
 By default, `install.sh` fetches whatever's currently `latest` on npm, bypassing Docker's cache for that step. To update, just re-run:
 
