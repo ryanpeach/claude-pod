@@ -8,19 +8,20 @@
 
 ```sh
 # Clone this repo (once)
-git clone https://github.com/ryanpeach/claude-pod.git ~/bin/claude-pod
+git clone https://github.com/ryanpeach/claude-pod.git ~/tools/claude-pod
 
 # Build claude-pod Docker image (once)
-cd ~/bin/claude-pod && ./install.sh
+cd ~/tools/claude-pod && ./install.sh
+echo 'PATH=$PATH:~/tools/claude-pod/bin' >> ~/.zshrc # (or ~/.bashrc if you use bash)
 
 # Navigate to the project you want to build with Claude Code
 # cd ~/projects/awesome-new-project
 
 # Launch Claude Code safely inside claude-pod container in "auto-approval" mode
-~/bin/claude-pod/claude-pod claude --dangerously-skip-permissions
+claude-pod claude --dangerously-skip-permissions
 ```
 
-Docker is the only requirement. The install path (`~/bin/claude-pod`) is just an example — put it wherever you want.
+Docker is the only requirement. The install path (`~/tools/claude-pod`) is just an example — put it wherever you want.
 
 **The outcome:** You can run Claude Code in auto-approval mode, skipping the need to approve every single change, without exposing your whole machine. `claude-pod` launches Claude inside a Docker container with only your current project folder mounted, so Claude can read and edit that project, but not your home directory, SSH keys, other projects, or host shell. This turns the main risk from “Claude can touch my machine” into “Claude can touch this project folder.” Read more about [what is and isn't isolated](#what-is-and-isnt-isolated).
 
@@ -47,7 +48,7 @@ Call the script using its full or relative path from any project:
 
 ```sh
 cd ~/Projects/anything
-~/bin/claude-pod/claude-pod
+claude-pod
 ```
 
 You land in a bash shell at the same path your project lives at on the host (e.g. `/Users/you/Projects/anything`), with `claude` on `PATH`. Run it however you like:
@@ -59,7 +60,7 @@ claude --dangerously-skip-permissions
 Alternatively, you may skip the shell and go straight into Claude. Anything you pass to `claude-pod` is run inside the container instead of bash. So this drops you directly into Claude in one command, and exits the container when Claude exits:
 
 ```sh
-~/bin/claude-pod/claude-pod claude --dangerously-skip-permissions
+claude-pod claude --dangerously-skip-permissions
 ```
 
 To exit, type `exit`.
@@ -68,8 +69,7 @@ To exit, type `exit`.
 
 For your convenience, you can add the following aliases to your shell configuration file (`~/.zshrc`, `~/.bashrc`, etc.):
 
-```sh
-alias claude-pod=~/bin/claude-pod/claude-pod                                  
+```sh                               
 alias cc='~/bin/claude-pod/claude-pod claude --dangerously-skip-permissions'  
 ```
 
