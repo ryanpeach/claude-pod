@@ -8,19 +8,19 @@
 
 ```sh
 # Clone this repo (once)
-git clone https://github.com/trekhleb/claude-pod.git ~/tools/claude-pod
+git clone https://github.com/trekhleb/claude-pod.git ~/bin/claude-pod
 
 # Build claude-pod Docker image (once)
-cd ~/tools/claude-pod && ./install.sh
+cd ~/bin/claude-pod && ./install.sh
 
 # Navigate to the project you want to build with Claude Code
 # cd ~/projects/awesome-new-project
 
 # Launch Claude Code safely inside claude-pod container in "auto-approval" mode
-~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions
+~/bin/claude-pod/claude-pod claude --dangerously-skip-permissions
 ```
 
-Docker is the only requirement. The install path (`~/tools/claude-pod`) is just an example — put it wherever you want.
+Docker is the only requirement. The install path (`~/bin/claude-pod`) is just an example — put it wherever you want.
 
 **The outcome:** You can run Claude Code in auto-approval mode, skipping the need to approve every single change, without exposing your whole machine. `claude-pod` launches Claude inside a Docker container with only your current project folder mounted, so Claude can read and edit that project, but not your home directory, SSH keys, other projects, or host shell. This turns the main risk from “Claude can touch my machine” into “Claude can touch this project folder.” Read more about [what is and isn't isolated](#what-is-and-isnt-isolated).
 
@@ -47,7 +47,7 @@ Call the script using its full or relative path from any project:
 
 ```sh
 cd ~/Projects/anything
-~/tools/claude-pod/claude-pod
+~/bin/claude-pod/claude-pod
 ```
 
 You land in a bash shell at the same path your project lives at on the host (e.g. `/Users/you/Projects/anything`), with `claude` on `PATH`. Run it however you like:
@@ -59,7 +59,7 @@ claude --dangerously-skip-permissions
 Alternatively, you may skip the shell and go straight into Claude. Anything you pass to `claude-pod` is run inside the container instead of bash. So this drops you directly into Claude in one command, and exits the container when Claude exits:
 
 ```sh
-~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions
+~/bin/claude-pod/claude-pod claude --dangerously-skip-permissions
 ```
 
 To exit, type `exit`.
@@ -69,8 +69,8 @@ To exit, type `exit`.
 For your convenience, you can add the following aliases to your shell configuration file (`~/.zshrc`, `~/.bashrc`, etc.):
 
 ```sh
-alias claude-pod=~/tools/claude-pod/claude-pod                                  
-alias cc='~/tools/claude-pod/claude-pod claude --dangerously-skip-permissions'  
+alias claude-pod=~/bin/claude-pod/claude-pod                                  
+alias cc='~/bin/claude-pod/claude-pod claude --dangerously-skip-permissions'  
 ```
 
 The shell-first form is more flexible, since you can run `npm install`, dev server, tests, then `claude` directly inside the container, so it is the default.
@@ -94,7 +94,7 @@ PORTS="3000 5173" claude-pod
 PORTS="8080:80" claude-pod
 
 # Or, alternatively, without using aliases
-PORTS="5173:5173" ~/tools/claude-pod
+PORTS="5173:5173" ~/bin/claude-pod
 ```
 
 > **Bind your dev server to `0.0.0.0` inside the container, not `localhost`.** Most dev servers default to `localhost`, which means they only listen on the container's own loopback — your host browser can't reach them even with `PORTS=...` set. Common fixes:
@@ -111,7 +111,7 @@ PORTS="5173:5173" ~/tools/claude-pod
 By default, `install.sh` fetches whatever's currently `latest` on npm, bypassing Docker's cache for that step. To update, just re-run:
 
 ```sh
-cd ~/tools/claude-pod
+cd ~/bin/claude-pod
 ./install.sh
 ```
 
