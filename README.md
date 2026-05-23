@@ -8,7 +8,7 @@
 
 ```sh
 # Clone this repo (once)
-git clone https://github.com/trekhleb/claude-pod.git ~/bin/claude-pod
+git clone https://github.com/ryanpeach/claude-pod.git ~/bin/claude-pod
 
 # Build claude-pod Docker image (once)
 cd ~/bin/claude-pod && ./install.sh
